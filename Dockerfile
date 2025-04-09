@@ -47,9 +47,13 @@ WORKDIR /app
 
 ENV NODE_ENV=production
 
+# Install pnpm globally in the runner stage as well
+RUN npm install -g pnpm
+
 RUN addgroup --system --gid 1001 nodejs
 RUN adduser --system --uid 1001 nextjs
 
+# Switch to non-root user AFTER global installs and system changes
 USER nextjs
 
 # Copy application artifacts from builder stage (/app) to runner stage (/app)
