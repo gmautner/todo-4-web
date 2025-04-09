@@ -4,6 +4,7 @@ import { asc, desc } from 'drizzle-orm';
 import { NewTaskForm } from '@/components/new-task-form';
 import { TaskList } from '@/components/task-list';
 import { toggleTaskStatus, deleteTask } from '@/app/actions';
+import { ModeToggle } from '@/components/mode-toggle';
 
 // Keep dynamic export
 export const dynamic = 'force-dynamic';
@@ -20,7 +21,10 @@ export default async function Home() {
     <main className="container mx-auto px-4 py-8">
       <div className="flex justify-between items-center mb-6">
         <h1 className="text-3xl font-bold">Minha Lista de Tarefas</h1>
-        <NewTaskForm />
+        <div className="flex items-center space-x-2">
+          <NewTaskForm />
+          <ModeToggle />
+        </div>
       </div>
 
       <TaskList 
