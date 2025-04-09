@@ -6,7 +6,6 @@ import { zodResolver } from '@hookform/resolvers/zod';
 import { z } from 'zod';
 import { createTask } from '@/app/actions';
 import { createTaskSchema } from '@/lib/schemas';
-import { priorityEnum } from '@/db/schema';
 
 import { Button } from "@/components/ui/button"
 import {

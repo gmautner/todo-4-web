@@ -50,20 +50,16 @@ export async function updateTask(input: UpdateTaskInput): Promise<UpdateTaskResp
   }
   const { id, title, description, priority, dueDate, tags } = validatedInput.data;
   try {
-    const result = await db.update(tasks)
+    await db.update(tasks)
       .set({
         title,
         description,
         priority,
         dueDate,
         tags: tags?.split(',').map((t: string) => t.trim()).filter(Boolean).join(',') || null,
-        updatedAt: new Date(), // Update the timestamp
+        updatedAt: new Date(),
       })
-      .where(eq(tasks.id, id)); // Use eq() here
-
-    // Optionally check if any row was actually updated
-    // Drizzle's update doesn't directly return the number of affected rows easily across drivers
-    // For simplicity, we assume success if no error is thrown
+      .where(eq(tasks.id, id));
 
     revalidatePath('/');
     return { success: true };
