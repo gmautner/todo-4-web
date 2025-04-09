@@ -68,4 +68,28 @@ export async function updateTask(input: UpdateTaskInput): Promise<UpdateTaskResp
     console.error("Failed to update task:", error);
     return { success: false, message: "Falha ao atualizar tarefa no banco de dados." };
   }
+}
+
+// --- Toggle Task Status Action --- 
+export async function toggleTaskStatus(id: number, currentStatus: boolean): Promise<{ success: boolean; message?: string }> {
+  try {
+    await db.update(tasks).set({ status: !currentStatus, updatedAt: new Date() }).where(eq(tasks.id, id));
+    revalidatePath('/');
+    return { success: true };
+  } catch (error) {
+    console.error("Failed to toggle task status:", error);
+    return { success: false, message: "Falha ao alterar status da tarefa." };
+  }
+}
+
+// --- Delete Task Action --- 
+export async function deleteTask(id: number): Promise<{ success: boolean; message?: string }> {
+  try {
+    await db.delete(tasks).where(eq(tasks.id, id));
+    revalidatePath('/');
+    return { success: true };
+  } catch (error) {
+    console.error("Failed to delete task:", error);
+    return { success: false, message: "Falha ao excluir tarefa." };
+  }
 } 

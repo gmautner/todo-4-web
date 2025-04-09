@@ -5,6 +5,9 @@ import type { tasks } from "@/db/schema";
 import { TaskItem } from '@/components/task-item';
 import { EditTaskForm } from '@/components/edit-task-form';
 
+// Define the expected shape of the action response
+interface ActionResponse { success: boolean; message?: string; }
+
 // Removed unused declare const placeholders
 // declare const toggleTaskStatus: ...
 // declare const deleteTask: ...
@@ -13,8 +16,9 @@ type TaskSelect = typeof tasks.$inferSelect;
 
 interface TaskListProps {
   initialTasks: TaskSelect[];
-  toggleTaskStatusAction: (id: number, currentStatus: boolean) => Promise<void>; 
-  deleteTaskAction: (id: number) => Promise<void>;
+  // Update prop types to match the actual return type of the actions
+  toggleTaskStatusAction: (id: number, currentStatus: boolean) => Promise<ActionResponse>; 
+  deleteTaskAction: (id: number) => Promise<ActionResponse>;
 }
 
 export function TaskList({ initialTasks, toggleTaskStatusAction, deleteTaskAction }: TaskListProps) {
@@ -26,6 +30,28 @@ export function TaskList({ initialTasks, toggleTaskStatusAction, deleteTaskActio
   const handleEditClick = (task: TaskSelect) => {
     setEditingTask(task);
     setIsEditDialogOpen(true);
+  };
+
+  // Define wrapper functions to handle potential errors from actions
+  // (Could also show toasts here based on the response)
+  const handleToggleStatus = async (id: number, currentStatus: boolean) => {
+     try {
+       await toggleTaskStatusAction(id, currentStatus);
+       // Optional: show success toast or handle optimistic update
+     } catch (error) {
+        console.error("Error toggling status:", error);
+        // Optional: show error toast
+     }
+  };
+
+  const handleDelete = async (id: number) => {
+     try {
+       await deleteTaskAction(id);
+       // Optional: show success toast or handle optimistic update
+     } catch (error) {
+        console.error("Error deleting task:", error);
+        // Optional: show error toast
+     }
   };
 
   // This function could be used for optimistic updates if setTasks was implemented
@@ -42,8 +68,8 @@ export function TaskList({ initialTasks, toggleTaskStatusAction, deleteTaskActio
           <TaskItem
             key={task.id}
             task={task}
-            onToggleStatus={toggleTaskStatusAction}
-            onDelete={deleteTaskAction}
+            onToggleStatus={handleToggleStatus} // Pass wrapper function
+            onDelete={handleDelete}         // Pass wrapper function
             onEdit={handleEditClick}
           />
         ))
