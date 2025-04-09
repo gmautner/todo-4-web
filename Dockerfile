@@ -1,4 +1,4 @@
-# Dockerfile v5
+# Dockerfile v6 (Relative Paths)
 
 # 1. Base Image for all stages
 FROM node:20-alpine AS base
@@ -10,8 +10,8 @@ RUN npm install -g pnpm
 # Installs *only* production dependencies
 FROM base AS deps
 WORKDIR /app
-# Copy package files from the web app folder into the current WORKDIR (/app)
-COPY apps/web/package.json apps/web/pnpm-lock.yaml ./
+# Copy package files from the build context root (which is apps/web) into the current WORKDIR (/app)
+COPY package.json pnpm-lock.yaml ./
 # Install production dependencies in /app
 RUN pnpm install --prod
 
@@ -22,15 +22,15 @@ RUN pnpm install --prod
 FROM base AS builder
 WORKDIR /app
 # Copy package files again to /app
-COPY apps/web/package.json apps/web/pnpm-lock.yaml ./
+COPY package.json pnpm-lock.yaml ./
 # Copy production dependencies installed in the 'deps' stage from /app/node_modules to /app/node_modules
 COPY --from=deps /app/node_modules ./node_modules
 # Install *all* dependencies (including dev) in /app
 RUN pnpm install
-# Copy the application source code from apps/web in context to /app in image
+# Copy the application source code from build context root (apps/web) to /app in image
 # This comes AFTER install to not invalidate dependency cache on code change
-COPY apps/web ./
-# Copy any root config files if they exist and are needed
+COPY . ./
+# Copy any root config files if they exist and are needed (assuming they are in apps/web now)
 # COPY tsconfig.base.json ./
 
 # Build the application (runs in /app)
