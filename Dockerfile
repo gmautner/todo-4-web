@@ -1,4 +1,4 @@
-# Dockerfile v6 (Relative Paths)
+# Dockerfile v8 (Remove prune)
 
 # 1. Base Image for all stages
 FROM node:20-alpine AS base
@@ -35,8 +35,6 @@ COPY . ./
 
 # Build the application (runs in /app)
 RUN pnpm build
-# Prune dev dependencies after build (runs in /app)
-RUN pnpm prune --prod
 
 # -------------------------------------
 
