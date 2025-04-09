@@ -7,6 +7,9 @@ import { eq, asc, desc } from 'drizzle-orm';
 import { NewTaskForm } from '@/components/new-task-form';
 import { TaskList } from '@/components/task-list';
 
+// Force dynamic rendering to prevent DB access during build
+export const dynamic = 'force-dynamic';
+
 // Server Action to toggle task status
 async function toggleTaskStatus(id: number, currentStatus: boolean) {
   'use server'; // Mark this function as a Server Action
